@@ -1,3 +1,5 @@
+import "dotenv/config";
+import "../lib/db.lib";
 import express, { Request, Response } from "express";
 
 const app = express();
