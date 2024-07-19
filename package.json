@@ -6,19 +6,24 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node dist/index.js",
     "dev": "nodemon",
-    "build": "tsc"
+    "build": "tsc",
+    "generate": "ts-node ./lib/cli.lib.ts"
   },
   "keywords": [],
   "author": "ziyauddin",
   "license": "ISC",
   "description": "backend services for 1work app",
   "devDependencies": {
+    "@types/crypto-js": "^4.2.2",
+    "@types/node": "^20.14.11",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.3"
   },
   "dependencies": {
+    "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
-    "@types/node": "^20.14.10",
+    "cors": "^2.8.5",
+    "crypto-js": "^4.2.0",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "mongoose": "^8.5.1"
