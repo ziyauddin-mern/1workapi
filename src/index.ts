@@ -3,14 +3,20 @@ import "../lib/db.lib";
 import cors from "cors";
 import crypto from "crypto-js";
 import express, { Request, Response } from "express";
+import bodyParser from "body-parser";
+import cookieParser from "cookie-parser";
 
 const app = express();
 
 app.listen(8080);
 
+// Routes
+import userRouter from "./user/user.routes";
+
 app.use(
   cors({
     origin: "http://localhost:5173",
+    credentials: true,
   })
 );
 
@@ -29,7 +35,12 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(cookieParser());
+
 app.get("/test", (req: Request, res: Response) => {
   res.json({ success: true });
 });
-const demo = "tst";
+
+app.use("/user", userRouter);
