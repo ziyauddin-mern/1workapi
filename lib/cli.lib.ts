@@ -1,4 +1,6 @@
 import fs from "fs";
+const beautify = require("js-beautify");
+
 const args = process.argv.slice(2);
 const lowerCaseArrray = args.map((item) => item.toLowerCase());
 const service = lowerCaseArrray.join("-");
@@ -32,19 +34,39 @@ try {
   const original = statements.join("\n");
   fs.writeFileSync("./src/index.ts", original, "utf8");
 
-  // Writing login in route file
-  const routeSample = [
-    "import express from 'express'",
-    "const router = express.Router()\n",
-    "router.get('/', (req, res)=>{",
-    "\t res.send('Welcome !')",
-    "})\n",
-    "export default router",
-  ];
-  fs.writeFileSync(
-    `./src/${service}/${service}.routes.ts`,
-    routeSample.join("\n")
+  // adding basic code architecture example to controller
+  const controllerSample = beautify.js(
+    `
+      import {Request, Response} from "express"
+      import Catch from '../../lib/catch.lib'
+
+      export const ${service}Fetch = Catch(async (req: Request, res: Response)=>{
+        res.status(200).json({success: true})
+      })
+    `,
+    { indentSize: 2 }
   );
+
+  fs.writeFileSync(
+    `./src/${service}/${service}.controller.ts`,
+    controllerSample
+  );
+
+  // Writing login in route file
+  const routeSample = beautify.js(
+    `
+      import express from "express"
+      import {${service}Fetch} from "./${service}.controller"
+      const router = express.Router()
+
+      router.get("/", ${service}Fetch)
+
+      export default router
+    `,
+    { indentSize: 2 }
+  );
+
+  fs.writeFileSync(`./src/${service}/${service}.routes.ts`, routeSample);
   console.log("Success !");
 } catch (err: any) {
   console.log(`${service} is already exist !`);
