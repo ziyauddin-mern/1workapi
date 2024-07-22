@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import { Schema, model } from "mongoose";
-import { signupDto } from "./user.dto";
-const userSchema = new Schema<signupDto>(
+import { UserSchemaDto } from "./user.dto";
+const userSchema = new Schema<UserSchemaDto>(
   {
     fullname: {
       type: String,
@@ -29,5 +29,5 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-const User = model<signupDto>("User", userSchema);
+const User = model<UserSchemaDto>("User", userSchema);
 export default User;
