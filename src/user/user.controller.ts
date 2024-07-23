@@ -1,11 +1,14 @@
 import jwt from "jsonwebtoken";
 import UserSchema from "./user.schema";
-import { Request, Response } from "express";
-import { GetTokenDto, LoginDto, SignupDto } from "./user.dto";
+import { NextFunction, Request, Response } from "express";
+import { ForgotRequestDto, GetTokenDto, LoginDto, SignupDto } from "./user.dto";
 import bcrypt from "bcrypt";
 import Catch from "../../lib/catch.lib";
+import { createOtp } from "../otp/otp.controller";
+import crypto from "crypto";
 
 const tenMinute = 600;
+const fiveMinute = 300;
 const oneMonth = 2629800;
 
 const cookieExpireInTenMinutes = 600000;
@@ -98,6 +101,32 @@ export const logout = (req: Request, res: Response) => {
   res.status(200).json({ success: true });
 };
 
-export const forgotPassword = (req: Request, res: Response) => {
-  res.send("Forgot Password");
-};
+export const forgotPassword = Catch(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const body: ForgotRequestDto = req.body;
+    const user = await UserSchema.findOne({ email: body.email });
+    if (!user)
+      return res
+        .status(4040)
+        .json({ success: false, message: "user does not exist." });
+
+    req.body.code = crypto.randomBytes(4).toString("hex").toUpperCase();
+    req.body.disableMicroservice = true;
+    await createOtp(req, res, next);
+
+    const token = jwt.sign(
+      { id: user._id },
+      process.env.FORGOT_SECRET as string,
+      { expiresIn: fiveMinute }
+    );
+    res.status(200).json(token);
+  }
+);
+
+export const changePassword = Catch(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const id = req.params.id;
+    await UserSchema.findByIdAndUpdate(id, { password: req.body.password });
+    res.status(200).json({ success: true });
+  }
+);

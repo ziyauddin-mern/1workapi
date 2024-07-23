@@ -23,3 +23,7 @@ export interface GetTokenDto {
   email: string;
   password: undefined;
 }
+
+export interface ForgotRequestDto {
+  email: string;
+}

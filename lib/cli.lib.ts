@@ -5,6 +5,13 @@ const args = process.argv.slice(2);
 const lowerCaseArrray = args.map((item) => item.toLowerCase());
 const service = lowerCaseArrray.join("-");
 
+const getCollectionName = () => {
+  const modified = service.split("-").join("");
+  const firstLatter = modified[0].toUpperCase();
+  const collection = `${firstLatter}${modified.slice(1)}`;
+  return collection;
+};
+
 try {
   fs.mkdirSync(`./src/${service}`);
   fs.writeFileSync(`./src/${service}/${service}.routes.ts`, "");
@@ -35,12 +42,30 @@ try {
   fs.writeFileSync("./src/index.ts", original, "utf8");
 
   // adding basic code architecture example to controller
+  const schemaSample = beautify.js(
+    `
+      import {Schema, model} from "mongoose"
+
+      const modelSchema = new Schema({
+
+      }, {timestamps: true});
+
+      const ${getCollectionName()}Schema = model("${getCollectionName()}", modelSchema)
+      export default ${getCollectionName()}Schema
+    `,
+    { indentSize: 2 }
+  );
+
+  fs.writeFileSync(`./src/${service}/${service}.schema.ts`, schemaSample);
+
+  // adding basic code architecture example to controller
   const controllerSample = beautify.js(
     `
       import {Request, Response} from "express"
       import Catch from '../../lib/catch.lib'
+      import ${getCollectionName()}Schema from './${service}.schema'
 
-      export const ${service}Fetch = Catch(async (req: Request, res: Response)=>{
+      export const fetch = Catch(async (req: Request, res: Response)=>{
         res.status(200).json({success: true})
       })
     `,
