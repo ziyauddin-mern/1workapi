@@ -4,8 +4,9 @@ import { NextFunction, Request, Response } from "express";
 import { ForgotRequestDto, GetTokenDto, LoginDto, SignupDto } from "./user.dto";
 import bcrypt from "bcrypt";
 import Catch from "../../lib/catch.lib";
-import { createOtp } from "../otp/otp.controller";
+import { createOtp, verifyOtp } from "../otp/otp.controller";
 import crypto from "crypto";
+import { sendEmail } from "../../lib/mail.lib";
 
 const tenMinute = 600;
 const fiveMinute = 300;
@@ -110,14 +111,26 @@ export const forgotPassword = Catch(
         .status(4040)
         .json({ success: false, message: "user does not exist." });
 
-    req.body.code = crypto.randomBytes(4).toString("hex").toUpperCase();
+    const otp = crypto.randomBytes(4).toString("hex").toUpperCase();
+    const isSend = await sendEmail(
+      user.email,
+      "OTP Verification",
+      `Your otp is ${otp}`
+    );
+    if (!isSend)
+      return res.status(500).json({
+        success: false,
+        message: "Internal server error",
+      });
+
+    req.body.code = otp;
     req.body.disableMicroservice = true;
     await createOtp(req, res, next);
 
     const token = jwt.sign(
       { id: user._id },
       process.env.FORGOT_SECRET as string,
-      { expiresIn: fiveMinute }
+      { expiresIn: oneMonth }
     );
     res.status(200).json(token);
   }
@@ -126,6 +139,11 @@ export const forgotPassword = Catch(
 export const changePassword = Catch(
   async (req: Request, res: Response, next: NextFunction) => {
     const id = req.params.id;
+    req.body.disableMicroservice = true;
+    const isVerified = await verifyOtp(req, res, next);
+    if (!isVerified)
+      return res.status(401).json({ success: false, message: "Invalid otp" });
+
     await UserSchema.findByIdAndUpdate(id, { password: req.body.password });
     res.status(200).json({ success: true });
   }

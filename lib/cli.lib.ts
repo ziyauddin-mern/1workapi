@@ -1,5 +1,5 @@
 import fs from "fs";
-const beautify = require("js-beautify");
+import beautify from "js-beautify";
 
 const args = process.argv.slice(2);
 const lowerCaseArrray = args.map((item) => item.toLowerCase());
@@ -53,7 +53,7 @@ try {
       const ${getCollectionName()}Schema = model("${getCollectionName()}", modelSchema)
       export default ${getCollectionName()}Schema
     `,
-    { indentSize: 2 }
+    { indent_size: 2 }
   );
 
   fs.writeFileSync(`./src/${service}/${service}.schema.ts`, schemaSample);
@@ -69,7 +69,7 @@ try {
         res.status(200).json({success: true})
       })
     `,
-    { indentSize: 2 }
+    { indent_size: 2 }
   );
 
   fs.writeFileSync(
@@ -81,14 +81,14 @@ try {
   const routeSample = beautify.js(
     `
       import express from "express"
-      import {${service}Fetch} from "./${service}.controller"
+      import {fetch} from "./${service}.controller"
       const router = express.Router()
 
-      router.get("/", ${service}Fetch)
+      router.get("/", fetch)
 
       export default router
     `,
-    { indentSize: 2 }
+    { indent_size: 2 }
   );
 
   fs.writeFileSync(`./src/${service}/${service}.routes.ts`, routeSample);

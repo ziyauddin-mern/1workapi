@@ -27,3 +27,9 @@ export interface GetTokenDto {
 export interface ForgotRequestDto {
   email: string;
 }
+
+export interface ForgotPaylod {
+  id: string;
+  iat: number;
+  exp: number;
+}
