@@ -24,7 +24,7 @@ export const verifyOtp = Catch(async (req: Request, res: Response) => {
 
   const { createdAt } = otp;
   const currentDateTime = moment();
-  const expiredDateTime = moment(createdAt).add(1, "month");
+  const expiredDateTime = moment(createdAt).add(5, "minutes");
 
   const isExpired = currentDateTime >= expiredDateTime;
   if (isExpired)

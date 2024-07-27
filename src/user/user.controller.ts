@@ -108,7 +108,7 @@ export const forgotPassword = Catch(
     const user = await UserSchema.findOne({ email: body.email });
     if (!user)
       return res
-        .status(4040)
+        .status(404)
         .json({ success: false, message: "user does not exist." });
 
     const otp = crypto.randomBytes(4).toString("hex").toUpperCase();
@@ -130,9 +130,9 @@ export const forgotPassword = Catch(
     const token = jwt.sign(
       { id: user._id },
       process.env.FORGOT_SECRET as string,
-      { expiresIn: oneMonth }
+      { expiresIn: fiveMinute }
     );
-    res.status(200).json(token);
+    res.status(200).json({ success: true, token });
   }
 );
 
