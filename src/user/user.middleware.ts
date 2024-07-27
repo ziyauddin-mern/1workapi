@@ -24,3 +24,33 @@ export const forgotToken = Catch(
     next();
   }
 );
+
+export const Refresh = Catch(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { refreshToken } = req.cookies;
+    if (refreshToken) {
+      const user: ForgotPaylod = jwt.verify(
+        refreshToken,
+        process.env.REFRESH_TOKEN_SECRET as string
+      ) as ForgotPaylod;
+
+      req.params.id = user.id;
+      next();
+    } else {
+      res.clearCookie("accessToken", {
+        httpOnly: true,
+        maxAge: 0,
+        secure: process.env.PROD === "true" ? true : false,
+        domain: process.env.USER_AGENT,
+      });
+
+      res.clearCookie("refreshToken", {
+        httpOnly: true,
+        maxAge: 0,
+        secure: process.env.PROD === "true" ? true : false,
+        domain: process.env.USER_AGENT,
+      });
+      res.status(400).send("Invalid request");
+    }
+  }
+);

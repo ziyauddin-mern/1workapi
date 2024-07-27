@@ -26,7 +26,7 @@ const getToken = (user: GetTokenDto) => {
   );
 
   const refreshToken = jwt.sign(
-    { _id: user._id },
+    { id: user._id },
     process.env.REFRESH_TOKEN_SECRET as string,
     {
       expiresIn: oneMonth,
@@ -148,3 +148,32 @@ export const changePassword = Catch(
     res.status(200).json({ success: true });
   }
 );
+
+export const refreshToken = Catch(async (req: Request, res: Response) => {
+  const id = req.params.id;
+  const user = await UserSchema.findById(id);
+  if (!user) return res.status(404).send("not found");
+
+  const { accessToken, refreshToken } = getToken(user.toObject());
+
+  res.clearCookie("accessToken");
+  res.clearCookie("refreshToken");
+
+  res.cookie("accessToken", accessToken, {
+    httpOnly: true,
+    maxAge: cookieExpireInTenMinutes,
+    secure: process.env.PROD === "true" ? true : false,
+    domain: process.env.USER_AGENT,
+  });
+
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    maxAge: cookieExpireInOneMonth,
+    secure: process.env.PROD === "true" ? true : false,
+    domain: process.env.USER_AGENT,
+  });
+  res.status(200).json({
+    email: user.email,
+    fullname: user.fullname,
+  });
+});
