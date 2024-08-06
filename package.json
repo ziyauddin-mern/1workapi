@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node dist/index.js",
+    "start": "pm2 start dist/src/index.js",
     "dev": "nodemon",
     "build": "tsc",
     "generate": "ts-node ./lib/cli.lib.ts"
