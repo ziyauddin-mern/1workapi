@@ -1,3 +1,4 @@
+import socket from "../lib/socket.lib";
 import "dotenv/config";
 import "../lib/db.lib";
 import cors from "cors";
@@ -7,11 +8,10 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 
 const app = express();
-
-app.listen(8080);
+socket(app);
 
 // Routes
-import invitationRouter from './invitation/invitation.routes'
+import invitationRouter from "./invitation/invitation.routes";
 import userRouter from "./user/user.routes";
 
 app.use(
@@ -46,4 +46,4 @@ app.get("/test", (req: Request, res: Response) => {
 
 app.use("/user", userRouter);
 
-app.use('/invitation', invitationRouter)
+app.use("/invitation", invitationRouter);

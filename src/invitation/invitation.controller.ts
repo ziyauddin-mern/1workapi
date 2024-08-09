@@ -3,8 +3,11 @@ import Catch from "../../lib/catch.lib";
 import InvitationSchema from "./invitation.schema";
 import jwt from "jsonwebtoken";
 import { AuthBodyInterface } from "./auth.middleware";
+import { getSocket } from "../../lib/socket.lib";
 import axios from "axios";
 axios.defaults.baseURL = process.env.LAMBDA_ENDPOINT;
+
+const io = getSocket();
 
 let fiveMinutes = "5m";
 
@@ -40,6 +43,11 @@ export const sendInvitaion = Catch(
       { email: req.body.email, admin: req.user.fullname },
       options
     );
+
+    io.emit("invitation", {
+      memberEmail: req.body.email,
+      admin: req.user,
+    });
 
     res.status(200).json(invitation);
   }
