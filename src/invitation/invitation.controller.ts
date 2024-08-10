@@ -46,7 +46,11 @@ export const sendInvitaion = Catch(
 
     io.emit("invitation", {
       memberEmail: req.body.email,
-      admin: req.user,
+      admin: {
+        id: req.user._id,
+        fullname: req.user.fullname,
+        email: req.user.email,
+      },
     });
 
     res.status(200).json(invitation);
