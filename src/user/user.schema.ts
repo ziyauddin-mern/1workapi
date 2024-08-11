@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import { Schema, model } from "mongoose";
+import { Schema, Types, model } from "mongoose";
 import { UserSchemaDto } from "./user.dto";
 const userSchema = new Schema<UserSchemaDto>(
   {
@@ -19,6 +19,12 @@ const userSchema = new Schema<UserSchemaDto>(
       required: true,
       trim: true,
     },
+    members: [
+      {
+        type: Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   { timestamps: true }
 );

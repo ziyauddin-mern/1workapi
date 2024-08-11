@@ -1,6 +1,7 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import Catch from "../../lib/catch.lib";
 import InvitationSchema from "./invitation.schema";
+import UserSchema from "../user/user.schema";
 import jwt from "jsonwebtoken";
 import { AuthBodyInterface } from "./auth.middleware";
 import { getSocket } from "../../lib/socket.lib";
@@ -12,7 +13,14 @@ const io = getSocket();
 let fiveMinutes = "5m";
 
 export const fetch = Catch(async (req: AuthBodyInterface, res: Response) => {
-  const invitations = await InvitationSchema.find({ admin: req.user._id });
+  const member = req.query.member;
+  const query = member
+    ? { memberEmail: req.user.email, status: "invited" }
+    : { admin: req.user._id };
+  const invitations = await InvitationSchema.find(query).populate(
+    "admin",
+    "fullname email"
+  );
   res.json(invitations);
 });
 
@@ -54,5 +62,24 @@ export const sendInvitaion = Catch(
     });
 
     res.status(200).json(invitation);
+  }
+);
+
+export const updateInvitation = Catch(
+  async (req: AuthBodyInterface, res: Response) => {
+    const invitation = await InvitationSchema.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+
+    if (!invitation) throw new Error("Invalid invitation id");
+
+    const user = await UserSchema.findByIdAndUpdate(req.body.admin, {
+      $push: { members: req.user._id },
+    });
+    if (!user) throw new Error("Invalid invitation id");
+
+    res.json(invitation);
   }
 );

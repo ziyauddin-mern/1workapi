@@ -1,4 +1,4 @@
-import { Document } from "mongoose";
+import { Document, Types } from "mongoose";
 
 export interface SignupDto {
   readonly fullname: string;
@@ -15,6 +15,7 @@ export interface UserSchemaDto extends Document {
   fullname: string;
   email: string;
   password: string;
+  members: [Types.ObjectId];
 }
 
 export interface GetTokenDto {
