@@ -3,7 +3,7 @@ import Catch from "../../lib/catch.lib";
 import InvitationSchema from "./invitation.schema";
 import UserSchema from "../user/user.schema";
 import jwt from "jsonwebtoken";
-import { AuthBodyInterface } from "./auth.middleware";
+import { AuthBodyInterface } from "../../middleware/auth.middleware";
 import { getSocket } from "../../lib/socket.lib";
 import axios from "axios";
 axios.defaults.baseURL = process.env.LAMBDA_ENDPOINT;

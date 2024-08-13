@@ -4,7 +4,7 @@ import {
   sendInvitaion,
   updateInvitation,
 } from "./invitation.controller";
-import AuthMiddleware from "./auth.middleware";
+import AuthMiddleware from "../../middleware/auth.middleware";
 const router = express.Router();
 
 router.get("/", AuthMiddleware, fetch);

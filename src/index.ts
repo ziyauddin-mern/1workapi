@@ -11,6 +11,7 @@ const app = express();
 socket(app);
 
 // Routes
+import taskRouter from './task/task.routes'
 import invitationRouter from "./invitation/invitation.routes";
 import userRouter from "./user/user.routes";
 
@@ -47,3 +48,5 @@ app.get("/test", (req: Request, res: Response) => {
 app.use("/user", userRouter);
 
 app.use("/invitation", invitationRouter);
+
+app.use('/task', taskRouter)

@@ -79,6 +79,7 @@ export const login = Catch(async (req: Request, res: Response) => {
     domain: process.env.USER_AGENT,
   });
   res.status(200).json({
+    _id: user._id,
     email: user.email,
     fullname: user.fullname,
   });
@@ -173,6 +174,7 @@ export const refreshToken = Catch(async (req: Request, res: Response) => {
     domain: process.env.USER_AGENT,
   });
   res.status(200).json({
+    _id: user._id,
     email: user.email,
     fullname: user.fullname,
   });

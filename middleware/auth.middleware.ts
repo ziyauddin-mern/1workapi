@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import Catch from "../../lib/catch.lib";
+import Catch from "../lib/catch.lib";
 import jwt from "jsonwebtoken";
 
 export interface AuthBodyInterface extends Request {
