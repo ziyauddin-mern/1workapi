@@ -179,3 +179,10 @@ export const refreshToken = Catch(async (req: Request, res: Response) => {
     fullname: user.fullname,
   });
 });
+
+// helper
+export const fetchUserByEmail = Catch(async (req: Request, res: Response) => {
+  const user = await UserSchema.findOne({ email: req.body.email }, { _id: 1 });
+  if (!user) throw new Error("User doesn`t exist");
+  return user;
+});

@@ -7,9 +7,9 @@ const modelSchema = new Schema(
       ref: "User",
       required: true,
     },
-    memberEmail: {
-      type: String,
-      trim: true,
+    member: {
+      type: Types.ObjectId,
+      ref: "User",
       required: true,
     },
     status: {

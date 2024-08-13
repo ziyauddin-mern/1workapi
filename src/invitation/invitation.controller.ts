@@ -6,29 +6,42 @@ import jwt from "jsonwebtoken";
 import { AuthBodyInterface } from "../../middleware/auth.middleware";
 import { getSocket } from "../../lib/socket.lib";
 import axios from "axios";
+import { fetchUserByEmail } from "../user/user.controller";
 axios.defaults.baseURL = process.env.LAMBDA_ENDPOINT;
 
 const io = getSocket();
 
 let fiveMinutes = "5m";
 
-export const fetch = Catch(async (req: AuthBodyInterface, res: Response) => {
-  const member = req.query.member;
-  const query = member
-    ? { memberEmail: req.user.email, status: "invited" }
-    : { admin: req.user._id };
-  const invitations = await InvitationSchema.find(query).populate(
-    "admin",
-    "fullname email"
-  );
-  res.json(invitations);
-});
+export const fetchInvited = Catch(
+  async (req: AuthBodyInterface, res: Response) => {
+    const invitations = await InvitationSchema.find({
+      admin: req.user._id,
+      ...req.query,
+    })
+      .populate("member", "fullname email")
+      .populate("admin", "fullname email");
+    res.json(invitations);
+  }
+);
+
+export const fetchMineInvitation = Catch(
+  async (req: AuthBodyInterface, res: Response) => {
+    const invitations = await InvitationSchema.find({
+      member: req.user._id,
+      status: "invited",
+    }).populate("admin", "fullname email");
+    res.json(invitations);
+  }
+);
 
 export const sendInvitaion = Catch(
-  async (req: AuthBodyInterface, res: Response) => {
+  async (req: AuthBodyInterface, res: Response, next: NextFunction) => {
+    const user = await fetchUserByEmail(req, res, next);
+
     const invitation = new InvitationSchema({
       admin: req.user._id,
-      memberEmail: req.body.email,
+      member: user._id,
     });
     await invitation.save();
 
@@ -53,7 +66,7 @@ export const sendInvitaion = Catch(
     );
 
     io.emit("invitation", {
-      memberEmail: req.body.email,
+      member: user._id,
       admin: {
         id: req.user._id,
         fullname: req.user.fullname,

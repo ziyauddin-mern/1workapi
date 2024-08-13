@@ -1,13 +1,15 @@
 import express from "express";
 import {
-  fetch,
+  fetchInvited,
+  fetchMineInvitation,
   sendInvitaion,
   updateInvitation,
 } from "./invitation.controller";
 import AuthMiddleware from "../../middleware/auth.middleware";
 const router = express.Router();
 
-router.get("/", AuthMiddleware, fetch);
+router.get("/invited", AuthMiddleware, fetchInvited);
+router.get("/mine", AuthMiddleware, fetchMineInvitation);
 router.post("/", AuthMiddleware, sendInvitaion);
 router.put("/:id", AuthMiddleware, updateInvitation);
 

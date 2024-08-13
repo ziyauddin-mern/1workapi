@@ -11,7 +11,9 @@ export const createTask = Catch(async (req: Request, res: Response) => {
 
 export const fetchTasks = Catch(
   async (req: AuthBodyInterface, res: Response) => {
-    const tasks = await TaskSchema.find({ owner: req.user._id });
+    const tasks = await TaskSchema.find({ owner: req.user._id })
+      .populate("members", "fullname email")
+      .populate("owner", "fullname email");
     res.json(tasks);
   }
 );

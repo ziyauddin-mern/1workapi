@@ -13,13 +13,13 @@ const modelSchema = new Schema(
     },
     owner: {
       type: Types.ObjectId,
-      ref: "user",
+      ref: "User",
       required: true,
     },
     members: [
       {
         type: Types.ObjectId,
-        ref: "user",
+        ref: "User",
         required: true,
       },
     ],
