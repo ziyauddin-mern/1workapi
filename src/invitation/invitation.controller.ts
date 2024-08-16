@@ -93,6 +93,22 @@ export const updateInvitation = Catch(
     });
     if (!user) throw new Error("Invalid invitation id");
 
+    io.emit("invitation-updated", {
+      admin: req.body.admin,
+      member: req.user._id,
+      status: req.body.status,
+    });
+
     res.json(invitation);
+  }
+);
+
+export const fetchInvitationByMemberId = Catch(
+  async (req: Request, res: Response) => {
+    const invitation = InvitationSchema.findOne({
+      member: req.params.memberId,
+      ...req.query,
+    });
+    return invitation;
   }
 );
