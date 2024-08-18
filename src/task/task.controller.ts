@@ -18,6 +18,39 @@ export const fetchTasks = Catch(
   }
 );
 
+export const fetchTasksByKanban = Catch(
+  async (req: AuthBodyInterface, res: Response) => {
+    const tasks = await TaskSchema.aggregate([
+      {
+        $group: {
+          _id: "$status",
+          tasks: {
+            $push: {
+              _id: "$_id",
+              title: "$title",
+              description: "$description",
+              owner: "$owner",
+              members: "$members",
+              priority: "$priority",
+              deadline: "$deadline",
+              attachments: "$attachments",
+              status: "$status",
+              createdAt: "$createdAt",
+              updatedAt: "$updatedAt",
+            },
+          },
+        },
+      },
+      {
+        $sort: {
+          _id: 1,
+        },
+      },
+    ]);
+    res.json(tasks);
+  }
+);
+
 export const fetchTaskById = Catch(
   async (req: AuthBodyInterface, res: Response) => {
     const task = await TaskSchema.findById(req.params.id);

@@ -38,6 +38,11 @@ const modelSchema = new Schema(
         trim: true,
       },
     ],
+    status: {
+      type: String,
+      default: "inprogress",
+      enum: ["inprogress", "working", "completed", "paused", "canceled"],
+    },
   },
   {
     timestamps: true,
