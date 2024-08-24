@@ -2,6 +2,10 @@ import { Request, Response } from "express";
 import Catch from "../../lib/catch.lib";
 import TaskSchema from "./task.schema";
 import { AuthBodyInterface } from "../../middleware/auth.middleware";
+import redis from "../../lib/redis.lib";
+import { ObjectId } from "mongodb";
+
+const EXPIRE_CATCH = 86400;
 
 export const createTask = Catch(async (req: Request, res: Response) => {
   const newTask = new TaskSchema(req.body);
@@ -20,7 +24,15 @@ export const fetchTasks = Catch(
 
 export const fetchTasksByKanban = Catch(
   async (req: AuthBodyInterface, res: Response) => {
+    const redisCatch = await redis.get(req.user._id);
+    if (redisCatch) return res.json(JSON.parse(redisCatch));
+
     const tasks = await TaskSchema.aggregate([
+      {
+        $match: {
+          owner: new ObjectId(req.user._id),
+        },
+      },
       {
         $group: {
           _id: "$status",
@@ -47,6 +59,8 @@ export const fetchTasksByKanban = Catch(
         },
       },
     ]);
+
+    await redis.setEx(req.user._id, EXPIRE_CATCH, JSON.stringify(tasks));
     res.json(tasks);
   }
 );

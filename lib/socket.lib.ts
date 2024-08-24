@@ -13,9 +13,7 @@ const socket = (express: any) => {
   });
   coreServer.listen(8080);
 
-  io.on("connection", (socket: any) => {
-    console.log(`User connect with id = ${socket.id}`);
-  });
+  io.on("connection", (socket: any) => {});
 
   return io;
 };

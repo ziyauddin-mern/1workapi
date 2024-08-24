@@ -1,6 +1,7 @@
 import socket from "../lib/socket.lib";
 import "dotenv/config";
 import "../lib/db.lib";
+import "../lib/redis.lib";
 import cors from "cors";
 import crypto from "crypto-js";
 import express, { Request, Response } from "express";
@@ -11,7 +12,7 @@ const app = express();
 socket(app);
 
 // Routes
-import taskRouter from './task/task.routes'
+import taskRouter from "./task/task.routes";
 import invitationRouter from "./invitation/invitation.routes";
 import userRouter from "./user/user.routes";
 
@@ -49,4 +50,4 @@ app.use("/user", userRouter);
 
 app.use("/invitation", invitationRouter);
 
-app.use('/task', taskRouter)
+app.use("/task", taskRouter);
